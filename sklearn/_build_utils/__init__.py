@@ -97,7 +97,7 @@ def gen_from_templates(templates):
             os.path.exists(outfile)
             and os.stat(template).st_mtime < os.stat(outfile).st_mtime
         ):
-            with open(template, "r") as f:
+            with open(template, "r", encoding='UTF-8') as f:
                 tmpl = f.read()
 
             tmpl_ = Tempita.sub(tmpl)
@@ -108,6 +108,6 @@ def gen_from_templates(templates):
                 "# Changes must be made there.\n\n"
             )
 
-            with open(outfile, "w") as f:
+            with open(outfile, "w", encoding='UTF-8') as f:
                 f.write(warn_msg)
                 f.write(tmpl_)
