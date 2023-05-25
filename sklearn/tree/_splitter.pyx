@@ -271,7 +271,7 @@ cdef unsigned int float_to_int_bits(float float_value) nogil:
 
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef float insert_error_impl(float error_rate, int error_range, float value) nogil:
+cdef float insert_error(float error_rate, int error_range, float value) nogil:
     cdef int error_mask = 0
     cdef int i
     cdef int error_bit
@@ -296,9 +296,6 @@ cdef float insert_error_impl(float error_rate, int error_range, float value) nog
     cdef float float_value
     memcpy(&float_value, int_bytes, sizeof(float))
     return float_value
-    
-def insert_error(float error_rate, int error_range, float value):
-    return insert_error_impl(error_rate, error_range, value)
 
 cdef inline int node_split_best(
     Splitter splitter,
