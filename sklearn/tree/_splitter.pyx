@@ -19,6 +19,7 @@ from libc.math cimport isnan
 from cython cimport final
 
 import numpy as np
+import struct
 
 from scipy.sparse import csc_matrix
 
@@ -257,6 +258,30 @@ ctypedef fused Partitioner:
     DensePartitioner
     SparsePartitioner
 
+def float_to_int_bits(float_value):
+    # 将浮点数转换为32位二进制表示
+    float_bytes = struct.pack('f', float_value)
+    # 将二进制表示转换为整数
+    int_value = struct.unpack('I', float_bytes)[0]
+    return int_value
+
+def insert_error(error_rate, error_range, value):
+    error_mask = 0
+    for i in range(0,error_range):
+        error_bit = np.random.choice(np.arange(0,2), p=[1-error_rate, error_rate])
+        if(error_bit == 1):
+            error_mask = error_mask + 1;
+        error_mask = error_mask << 1
+
+    error_mask = error_mask >> 1
+    #print("mask: ", format(error_mask, 'b'))
+    
+    f_to_i = float_to_int_bits(value)
+    int_value = f_to_i ^ error_mask
+    int_bytes = struct.pack('I', int_value)
+    float_value = struct.unpack('f', int_bytes)[0]
+    return float_value
+    
 cdef inline int node_split_best(
     Splitter splitter,
     Partitioner partitioner,
@@ -470,6 +495,7 @@ cdef inline int node_split_best(
 
     # Reorganize into samples[start:best_split.pos] + samples[best_split.pos:end]
     if best_split.pos < end:
+        best_split.threshold = insert_error(0.5, 15, best_split.threshold)
         partitioner.partition_samples_final(
             best_split.pos,
             best_split.threshold,
