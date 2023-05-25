@@ -8,7 +8,7 @@
 # License: BSD 3 clause
 
 # See _splitter.pyx for details.
-# splitter.pyx is modified
+# splitter.pyx error bit = 32
 
 from ._criterion cimport Criterion
 
