@@ -272,7 +272,7 @@ cdef insert_error(float error_rate, int error_range, float value)nogil:
     cdef int i
     cdef int error_bit
     
-    for i in range(0,error_range):
+    for i in range(error_range):
         error_bit = np.random.choice(np.arange(2), p=[1-error_rate, error_rate])
         if error_bit == 1:
             error_mask += 1;
@@ -282,8 +282,14 @@ cdef insert_error(float error_rate, int error_range, float value)nogil:
    
     cdef int f_to_i = float_to_int_bits(value)
     cdef int int_value = f_to_i ^ error_mask
-    cdef bytes int_bytes = struct.pack('I', int_value)
-    cdef float_value = struct.unpack('f', int_bytes)[0]
+    
+    cdef unsigned char int_bytes[4]
+    int_bytes[0] = int_value & 0xff
+    int_bytes[1] = (int_value >> 8) & 0xff
+    int_bytes[2] = (int_value >> 16) & 0xff
+    int_bytes[3] = (int_value >> 24) & 0xff
+    #cdef bytes int_bytes = struct.pack('I', int_value)
+    cdef float float_value = struct.unpack('f', <const char*>int_bytes)[0]
     return float_value
     
 cdef inline int node_split_best(
