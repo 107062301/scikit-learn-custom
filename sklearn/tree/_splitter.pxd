@@ -8,6 +8,7 @@
 # License: BSD 3 clause
 
 # See _splitter.pyx for details.
+# splitter.pyx is modified
 
 from ._criterion cimport Criterion
 
