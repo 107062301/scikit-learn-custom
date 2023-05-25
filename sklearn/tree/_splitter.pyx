@@ -15,8 +15,6 @@ from ._criterion cimport Criterion
 
 import cython
 cimport libc.stdlib as stlib
-cimport cpython.bytes c_bytes
-cimport cpython.ndarray c_array
 
 from libc.stdlib cimport qsort
 from libc.string cimport memcpy
