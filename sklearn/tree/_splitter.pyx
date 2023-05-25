@@ -13,6 +13,11 @@
 
 from ._criterion cimport Criterion
 
+import cython
+cimport libc.stdlib as stlib
+cimport cpython.bytes c_bytes
+cimport cpython.ndarray c_array
+
 from libc.stdlib cimport qsort
 from libc.string cimport memcpy
 from libc.math cimport isnan
@@ -259,39 +264,44 @@ ctypedef fused Partitioner:
     SparsePartitioner
     
 
-cdef float_to_int_bits(float_value):
-    # 将浮点数转换为32位二进制表示
-    cdef bytes float_bytes = struct.pack('f', float_value)
-    # 将二进制表示转换为整数
-    cdef unsigned int int_value = struct.unpack('I', float_bytes)[0]
+cdef unsigned int float_to_int_bits(float float_value) nogil:
+    cdef unsigned char float_bytes[4]
+    cdef unsigned int int_value
+    memcpy(float_bytes, &float_value, sizeof(float))
+    memcpy(&int_value, float_bytes, sizeof(unsigned int))
     return int_value
 
-
-cdef insert_error(float error_rate, int error_range, float value)nogil:
+@cython.nonecheck(False)
+@cython.cdivision(True)
+cdef float insert_error_impl(float error_rate, int error_range, float value) nogil:
     cdef int error_mask = 0
     cdef int i
     cdef int error_bit
     
     for i in range(error_range):
-        error_bit = np.random.choice(np.arange(2), p=[1-error_rate, error_rate])
-        if error_bit == 1:
+        error_bit = stlib.rand() < error_rate * stlib.RAND_MAX
+        if error_bit:
             error_mask += 1;
         error_mask <<= 1
 
     error_mask >>= 1
    
-    cdef int f_to_i = float_to_int_bits(value)
-    cdef int int_value = f_to_i ^ error_mask
+    cdef unsigned int f_to_i = float_to_int_bits(value)
+    cdef unsigned int int_value = f_to_i ^ error_mask
     
     cdef unsigned char int_bytes[4]
     int_bytes[0] = int_value & 0xff
     int_bytes[1] = (int_value >> 8) & 0xff
     int_bytes[2] = (int_value >> 16) & 0xff
     int_bytes[3] = (int_value >> 24) & 0xff
-    #cdef bytes int_bytes = struct.pack('I', int_value)
-    cdef float float_value = struct.unpack('f', <const char*>int_bytes)[0]
+    
+    cdef float float_value
+    memcpy(&float_value, int_bytes, sizeof(float))
     return float_value
     
+def insert_error(float error_rate, int error_range, float value):
+    return insert_error_impl(error_rate, error_range, value)
+
 cdef inline int node_split_best(
     Splitter splitter,
     Partitioner partitioner,
