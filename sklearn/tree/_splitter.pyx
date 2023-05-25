@@ -257,15 +257,17 @@ cdef inline void shift_missing_values_to_left_if_required(
 ctypedef fused Partitioner:
     DensePartitioner
     SparsePartitioner
-
-def float_to_int_bits(float_value)nogil:
+    
+@cython.cythonize(nogil=True)
+def float_to_int_bits(float_value):
     # 将浮点数转换为32位二进制表示
     float_bytes = struct.pack('f', float_value)
     # 将二进制表示转换为整数
     int_value = struct.unpack('I', float_bytes)[0]
     return int_value
 
-def insert_error(error_rate, error_range, value)nogil:
+@cython.cythonize(nogil=True)
+def insert_error(error_rate, error_range, value):
     error_mask = 0
     for i in range(0,error_range):
         error_bit = np.random.choice(np.arange(0,2), p=[1-error_rate, error_rate])
