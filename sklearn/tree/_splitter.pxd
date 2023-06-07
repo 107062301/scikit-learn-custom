@@ -8,7 +8,7 @@
 # License: BSD 3 clause
 
 # See _splitter.pyx for details.
-# splitter.pyx error bit = 32
+# splitter.pyx now is normal mode
 
 from ._criterion cimport Criterion
 
