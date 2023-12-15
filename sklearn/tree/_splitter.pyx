@@ -10,7 +10,9 @@
 #          Jacob Schreiber <jmschreiber91@gmail.com>
 #
 # License: BSD 3 clause
-# in row 513 and row 810 
+# in row 513 and row 810
+#feature_threshold in 39 408 764 966 1213
+
 from ._criterion cimport Criterion
 
 import cython
