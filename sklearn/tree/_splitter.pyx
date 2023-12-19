@@ -11,7 +11,7 @@
 #
 # License: BSD 3 clause
 # in row 513 and row 810
-#feature_threshold in 39 408 764 966 1213
+# feature_threshold in 39 408 764 966 1213
 
 from ._criterion cimport Criterion
 
@@ -36,7 +36,7 @@ from ._utils cimport RAND_R_MAX
 cdef double INFINITY = np.inf
 
 # Mitigate precision differences between 32 bit and 64 bit
-cdef DTYPE_t FEATURE_THRESHOLD = 1e-7
+cdef DTYPE_t FEATURE_THRESHOLD = 0 #1e-7
 
 # Constant to switch between algorithm non zero value extract algorithm
 # in SparsePartitioner
