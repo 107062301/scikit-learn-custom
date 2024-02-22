@@ -8,7 +8,7 @@
 # License: BSD 3 clause
 
 # See _splitter.pyx for details.
-# splitter.pyx now is normal
+# splitter.pyx now is 0.5/23
 # FEATURE_THRESHOLD now = 0
 
 from ._criterion cimport Criterion
