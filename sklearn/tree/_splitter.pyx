@@ -298,7 +298,7 @@ cdef float insert_error(float error_rate, int error_range, float value) nogil:
     cdef float float_value
     memcpy(&float_value, int_bytes, sizeof(float))
     return float_value
-############################################################################## for integer
+
 """
 cdef int insert_error_int(float error_rate, int error_range, int value) nogil:
     cdef int error_mask = 0
@@ -317,7 +317,6 @@ cdef int insert_error_int(float error_rate, int error_range, int value) nogil:
     
     return int_value
 """
-##############################################################################
 
 cdef inline int node_split_best(
     Splitter splitter,
