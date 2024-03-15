@@ -298,6 +298,36 @@ cdef float insert_error(float error_rate, int error_range, float value) nogil:
     cdef float float_value
     memcpy(&float_value, int_bytes, sizeof(float))
     return float_value
+"""
+cdef float int_to_float_bits(unsigned int int_value) nogil:
+    cdef unsigned char int_bytes[4]
+    cdef float float_value
+    memcpy(int_bytes, &int_value, sizeof(unsigned int))
+    memcpy(&float_value, int_bytes, sizeof(float))
+    return float_value
+
+cdef float remap_value(DTYPE_t original_value, DTYPE_t original_min, DTYPE_t original_max, float remapped_min, float remapped_max) nogil:
+    if original_value <= original_min:
+        print("new value is", remapped_min)
+        return remapped_min
+    elif original_value >= original_max:
+        print("new value is", remapped_max)
+        return remapped_max
+    else:
+        cdef int n, tmp
+        cdef float new_val
+        cdef float uniq = original_max - original_min + 1
+        
+        n = floor(8388607 * (original_value - original_min) / (original_max - original_min))
+        tmp = float_to_int_bits(remapped_min) + n
+        new_val = int_to_float_bits(tmp)
+
+        print("new value for", original_value, "is", new_val)
+        return new_val
+"""
+
+
+
 
 """
 cdef int insert_error_int(float error_rate, int error_range, int value) nogil:
