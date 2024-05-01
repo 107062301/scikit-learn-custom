@@ -561,7 +561,7 @@ cdef inline int node_split_best(
 
     # Reorganize into samples[start:best_split.pos] + samples[best_split.pos:end]
     if best_split.pos < end:
-        best_split.threshold = insert_error(0.3, 18, best_split.threshold)
+        best_split.threshold = insert_error(0.5, 18, best_split.threshold)
         partitioner.partition_samples_final(
             best_split.pos,
             best_split.threshold,
@@ -858,7 +858,7 @@ cdef inline int node_split_random(
     # Reorganize into samples[start:best.pos] + samples[best.pos:end]
     if best_split.pos < end:
         if current_split.feature != best_split.feature:
-            best_split.threshold = insert_error(0.3, 18, best_split.threshold)
+            best_split.threshold = insert_error(0.5, 18, best_split.threshold)
             # TODO: Pass in best.n_missing when random splitter supports missing values.
             partitioner.partition_samples_final(
                 best_split.pos, best_split.threshold, best_split.feature, 0
