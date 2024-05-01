@@ -10,7 +10,7 @@
 #          Jacob Schreiber <jmschreiber91@gmail.com>
 #
 # License: BSD 3 clause
-# in row 513 and row 810
+# in row 564 and row 861
 # feature_threshold in 39 408 764 966 1213
 
 from ._criterion cimport Criterion
@@ -287,7 +287,7 @@ cdef float insert_error(float error_rate, int error_range, float value) nogil:
     error_mask >>= 1
    
     cdef unsigned int f_to_i = float_to_int_bits(value)
-    cdef unsigned int int_value = f_to_i ^ error_mask
+    cdef unsigned int int_value = f_to_i & (~error_mask)
     
     cdef unsigned char int_bytes[4]
     int_bytes[0] = int_value & 0xff
@@ -561,7 +561,7 @@ cdef inline int node_split_best(
 
     # Reorganize into samples[start:best_split.pos] + samples[best_split.pos:end]
     if best_split.pos < end:
-        best_split.threshold = insert_error(0.5, 23, best_split.threshold)
+        best_split.threshold = insert_error(0.3, 23, best_split.threshold)
         partitioner.partition_samples_final(
             best_split.pos,
             best_split.threshold,
@@ -858,7 +858,7 @@ cdef inline int node_split_random(
     # Reorganize into samples[start:best.pos] + samples[best.pos:end]
     if best_split.pos < end:
         if current_split.feature != best_split.feature:
-            best_split.threshold = insert_error(0.5, 23, best_split.threshold)
+            best_split.threshold = insert_error(0.3, 23, best_split.threshold)
             # TODO: Pass in best.n_missing when random splitter supports missing values.
             partitioner.partition_samples_final(
                 best_split.pos, best_split.threshold, best_split.feature, 0
